@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import aixos from "axios";
 import "./UploadForm.css";
 import { toast } from "react-toastify";
 import ProgressBar from "./ProgressBar";
+import { ImageContext } from "../context/ImageContext";
 
 const UploadForm = () => {
+  const [images, setImages] = useContext(ImageContext);
+
   const defaultFileName = "이미지 파일을 업로드 해주세요.";
   const [file, setFile] = useState(null);
   const [imgSrc, setImgSrc] = useState(null);
@@ -27,13 +30,14 @@ const UploadForm = () => {
     const formData = new FormData();
     formData.append("image", file);
     try {
-      const res = await aixos.post("/upload", formData, {
+      const res = await aixos.post("/images", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (e) => {
           setPrecent(Math.round(100 * e.loaded) / e.total);
         },
       });
       console.log({ res });
+      setImages([...images, res.data]);
       toast.success("이미지 업로드 성공!");
       setTimeout(() => {
         setPrecent(0);
