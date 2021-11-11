@@ -1,33 +1,13 @@
 require("dotenv").config();
 const express = require("express");
-const multer = require("multer");
-const { v4: uuid } = require("uuid");
-const mime = require("mime-types");
 const mongoose = require("mongoose");
-const Image = require("./models/Image");
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./uploads"),
-  filename: (req, file, cb) =>
-    cb(null, `${uuid()}.${mime.extension(file.mimetype)}`),
-});
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    if (["image/png", "image/jpeg", "image/gif"].includes(file.mimetype))
-      cb(null, true);
-    else cb(new Error("invalid file type"), false);
-  },
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-});
+const { imageRouter } = require("./routes/imageRouter");
 
 const app = express();
-const PORT = 5000;
+const { MONGO_URI, PORT } = process.env;
 
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(MONGO_URI, {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,
     // useCreateIndex: true,
@@ -35,17 +15,7 @@ mongoose
   .then(() => {
     console.log("MongoDB Connected.");
     app.use("/uploads", express.static("uploads"));
-    app.post("/images", upload.single("image"), async (req, res) => {
-      const image = await new Image({
-        key: req.file.filename,
-        originalFileName: req.file.originalname,
-      }).save();
-      res.json(image);
-    });
-    app.get("/images", async (req, res) => {
-      const images = await Image.find();
-      res.json(images);
-    });
+    app.use("/images", imageRouter);
     app.listen(PORT, () => console.log("Express server" + PORT));
   })
   .catch((err) => console.log(err));
