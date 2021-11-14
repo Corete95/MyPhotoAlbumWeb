@@ -2,6 +2,7 @@ const { Router } = require("express");
 const userRouter = Router();
 const User = require("../models/User");
 const { hash, compare } = require("bcryptjs");
+const mongoose = require("mongoose");
 
 userRouter.post("/register", async (req, res) => {
   try {
@@ -18,13 +19,17 @@ userRouter.post("/register", async (req, res) => {
       sessions: [{ createdAt: new Date() }],
     }).save();
     const session = user.sessions[0];
-    res.json({ message: "user", sessionId: session._id, name: user.name });
+    res.json({
+      message: "user register",
+      sessionId: session._id,
+      name: user.name,
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-userRouter.post("/login", async (req, res) => {
+userRouter.patch("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
     const isvalid = await compare(req.body.password, user.hashedPassword);
@@ -38,9 +43,21 @@ userRouter.post("/login", async (req, res) => {
       name: user.name,
     });
   } catch (err) {
-    console.log("err", err);
     res.status(400).json({ message: err.message });
   }
 });
 
+userRouter.patch("/logout", async (req, res) => {
+  try {
+    if (!req.user) throw new Error("invalid sessionid");
+    await User.updateOne(
+      { _id: req.user.id },
+      { $pull: { sessions: { _id: req.headers.sessionid } } }
+    );
+    console.log(user);
+    res.json({ message: "user is logged out" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 module.exports = { userRouter };
