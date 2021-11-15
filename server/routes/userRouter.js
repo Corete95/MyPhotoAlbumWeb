@@ -43,6 +43,7 @@ userRouter.patch("/login", async (req, res) => {
       name: user.name,
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ message: err.message });
   }
 });
@@ -54,9 +55,9 @@ userRouter.patch("/logout", async (req, res) => {
       { _id: req.user.id },
       { $pull: { sessions: { _id: req.headers.sessionid } } }
     );
-    console.log(user);
     res.json({ message: "user is logged out" });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ message: err.message });
   }
 });
