@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "../pages/RegisterPage.css";
 import CustomInput from "../components/CustomInput";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
+import { useHistory } from "react-router";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
+  const [me, setMe] = useContext(AuthContext);
+  const history = useHistory();
 
   const submitHandler = async (e) => {
     try {
@@ -25,7 +29,12 @@ const RegisterPage = () => {
         username,
         password,
       });
-      console.log({ result });
+      setMe({
+        userId: result.data.userId,
+        sessionId: result.data.sessionId,
+        name: result.data.name,
+      });
+      history.push("/");
       toast.success("회원가입 완료!");
     } catch (err) {
       console.log(err);
