@@ -12,6 +12,11 @@
   font-size: 30px;
 }
 
+.imgListDiv h3 {
+  display: inline-block;
+  margin-right: 13px;
+}
+
 html,
 body,
 div,

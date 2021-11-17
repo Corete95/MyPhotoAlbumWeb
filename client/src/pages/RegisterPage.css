@@ -6,11 +6,17 @@
 .inputDiv {
   margin-top: 10px;
 }
-input {
+/* input {
   width: 100%;
   height: 20px;
   margin: 1px 0px;
-}
+} */
 button {
   margin-top: 20px;
+}
+
+.inputDiv input {
+  width: 100%;
+  height: 20px;
+  margin: 1px 0px;
 }

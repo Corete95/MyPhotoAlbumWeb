@@ -9,7 +9,6 @@ const ToolBar = () => {
   const [me, setMe] = useContext(AuthContext);
 
   const logoutHandler = async () => {
-    console.log("logoutHandler", me);
     try {
       await axios.patch("/users/logout");
       setMe();
@@ -19,7 +18,6 @@ const ToolBar = () => {
       toast.error(err.message);
     }
   };
-  console.log("home", me);
 
   return (
     <div>
