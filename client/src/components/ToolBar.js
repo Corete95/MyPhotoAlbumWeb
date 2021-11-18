@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import "../components/ToolBar.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
+import styled, { css } from "styled-components";
 
 const ToolBar = () => {
   const [me, setMe] = useContext(AuthContext);
@@ -25,21 +25,32 @@ const ToolBar = () => {
         <span className="home">홈</span>
       </Link>
       {me ? (
-        <span onClick={logoutHandler} className="logout">
+        <Span onClick={logoutHandler} className="logout">
           로그아웃({me.name})
-        </span>
+        </Span>
       ) : (
         <>
           <Link to="/auth/login">
-            <span className="login">로그인</span>
+            <Span className="login">로그인</Span>
           </Link>
           <Link to="/auth/register">
-            <span className="register">회원가입</span>
+            <Span register>회원가입</Span>
           </Link>
         </>
       )}
     </div>
   );
 };
+
+const Span = styled.span`
+  float: right;
+  cursor: pointer;
+
+  ${(props) =>
+    props.register &&
+    css`
+      margin-right: 15px;
+    `}
+`;
 
 export default ToolBar;

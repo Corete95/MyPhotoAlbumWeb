@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import aixos from "axios";
-import "./UploadForm.css";
 import { toast } from "react-toastify";
 import ProgressBar from "./ProgressBar";
 import { ImageContext } from "../context/ImageContext";
+import styled, { css } from "styled-components";
 
 const UploadForm = () => {
   const defaultFileName = "이미지 파일을 업로드 해주세요.";
@@ -55,13 +55,9 @@ const UploadForm = () => {
   };
   return (
     <form onSubmit={onSubmit}>
-      <img
-        alt=""
-        className={`img-preview ${imgSrc && "img-preview-show"}`}
-        src={imgSrc}
-      />
+      <ImgPreview alt="" show={imgSrc} src={imgSrc} />
       <ProgressBar precent={precent} />
-      <div className="file-dropper">
+      <FileDropper>
         {fileName}
         <input
           id="image"
@@ -69,7 +65,7 @@ const UploadForm = () => {
           accept="image/jpeg,image/png,image/gif  "
           onChange={imageSelectHandler}
         />
-      </div>
+      </FileDropper>
       <input
         type="checkbox"
         id="public-check"
@@ -77,11 +73,59 @@ const UploadForm = () => {
         onChange={() => setIsPublic(!isPublic)}
       />
       <label htmlFor="public-check">비공개</label>
-      <button className="submit-btn" type="submit">
-        제출
-      </button>
+      <Button type="submit">제출</Button>
     </form>
   );
 };
+
+const FileDropper = styled.div`
+  border: 1px dashed black;
+  height: 200px;
+  background-color: #eeb977;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+
+  input {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    cursor: pointer;
+  }
+
+  &:hover {
+    background-color: gray;
+    color: white;
+    transition: 0.5;
+  }
+`;
+
+const ImgPreview = styled.img`
+  width: 0%;
+  opacity: 0;
+  display: block;
+  margin: 0 auto 20px auto;
+  border-radius: 10px;
+  border: 5px solid black;
+
+  ${(props) =>
+    props.show &&
+    css`
+      width: 30%;
+      opacity: 1;
+      transition: 0.5s;
+    `}
+`;
+
+const Button = styled.button`
+  width: 100%;
+  height: 40px;
+  border-radius: 3px;
+  cursor: pointer;
+`;
 
 export default UploadForm;

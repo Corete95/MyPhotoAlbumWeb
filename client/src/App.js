@@ -1,17 +1,17 @@
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
 import RegisterPage from "./pages/RegisterPage";
 import ToolBar from "./components/ToolBar";
 import { Switch, Route } from "react-router-dom";
+import styled from "styled-components";
 
 const App = () => {
   return (
     <>
-      <div style={{ maxWidth: 600, margin: "auto" }}>
+      <Container>
         <ToastContainer />
         <ToolBar />
         <Switch>
@@ -19,9 +19,14 @@ const App = () => {
           <Route path="/auth/login" exact component={LoginPage} />
           <Route path="/" component={MainPage} />
         </Switch>
-      </div>
+      </Container>
     </>
   );
 };
+
+const Container = styled.div`
+  max-width: 600px;
+  margin: auto;
+`;
 
 export default App;

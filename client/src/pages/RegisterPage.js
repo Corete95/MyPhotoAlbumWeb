@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
-import "../pages/RegisterPage.css";
 import CustomInput from "../components/CustomInput";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useHistory } from "react-router";
+import styled from "styled-components";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -43,7 +43,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="registerPage">
+    <RegisterContainer>
       <h3>회원가입</h3>
       <form onSubmit={submitHandler}>
         <CustomInput label="이름" vlaue={name} setValue={setName} />
@@ -60,10 +60,20 @@ const RegisterPage = () => {
           setValue={setPasswordCheck}
           type={"password"}
         />
-        <button type="submit">회원가입</button>
+        <Button type="submit">회원가입</Button>
       </form>
-    </div>
+    </RegisterContainer>
   );
 };
+
+const RegisterContainer = styled.div`
+  max-width: 350px;
+  padding-top: 100px;
+  margin: 0 auto;
+`;
+
+const Button = styled.button`
+  margin-top: 20px;
+`;
 
 export default RegisterPage;
