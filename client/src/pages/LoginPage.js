@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import { toast } from "react-toastify";
 import CustomInput from "../components/CustomInput";
 import { AuthContext } from "../context/AuthContext";
+import styled from "styled-components";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -30,8 +31,8 @@ const LoginPage = () => {
     }
   };
   return (
-    <div>
-      <h3>Login</h3>
+    <LoginContainer>
+      <h3>로그인</h3>
       <form onSubmit={loginHandler}>
         <CustomInput label="회원ID" vlaue={username} setValue={setUsername} />
         <CustomInput
@@ -40,10 +41,24 @@ const LoginPage = () => {
           setValue={setPassword}
           type="password"
         />
-        <button type="submit">로그인</button>
+        <Button type="submit">로그인</Button>
       </form>
-    </div>
+    </LoginContainer>
   );
 };
 
+const LoginContainer = styled.div`
+  max-width: 350px;
+  margin: 0 auto;
+
+  h3 {
+    font-size: 20px;
+    text-align: center;
+    margin: 30px;
+  }
+`;
+
+const Button = styled.button`
+  margin-top: 20px;
+`;
 export default LoginPage;

@@ -28,6 +28,7 @@ const ImageList = () => {
 };
 
 const ImageListContainer = styled.div`
+  margin-top: 40px;
   h3 {
     display: inline-block;
     margin-right: 13px;
@@ -35,6 +36,7 @@ const ImageListContainer = styled.div`
 `;
 
 const ImageFiles = styled.div`
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;

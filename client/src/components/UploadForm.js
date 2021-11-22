@@ -6,29 +6,40 @@ import { ImageContext } from "../context/ImageContext";
 import styled, { css } from "styled-components";
 
 const UploadForm = () => {
-  const defaultFileName = "이미지 파일을 업로드 해주세요.";
   const { images, setImages, myImages, setMyImages } = useContext(ImageContext);
-  const [file, setFile] = useState(null);
-  const [imgSrc, setImgSrc] = useState(null);
-  const [fileName, setFileName] = useState(defaultFileName);
+  const [files, setFiles] = useState(null);
+  const [previews, setPreviews] = useState([]);
   const [precent, setPrecent] = useState(0);
   const [isPublic, setIsPublic] = useState(true);
 
-  const imageSelectHandler = (e) => {
-    const imageFile = e.target.files[0];
-    setFile(imageFile);
-    setFileName(imageFile.name);
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(imageFile);
-    fileReader.onload = (e) => {
-      setImgSrc(e.target.result);
-    };
+  const imageSelectHandler = async (e) => {
+    const imageFiles = e.target.files;
+    setFiles(imageFiles);
+
+    const imagePreviews = await Promise.all(
+      [...imageFiles].map(async (imageFile) => {
+        return new Promise((resolve, reject) => {
+          try {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(imageFile);
+            fileReader.onload = (e) =>
+              resolve({ imgSrc: e.target.result, fileName: imageFile.name });
+          } catch (err) {
+            reject(err);
+          }
+        });
+      })
+    );
+
+    setPreviews(imagePreviews);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("image", file);
+    for (let file of files) {
+      formData.append("image", file);
+    }
     formData.append("public", isPublic);
     try {
       const res = await aixos.post("/images", formData, {
@@ -37,31 +48,41 @@ const UploadForm = () => {
           setPrecent(Math.round(100 * e.loaded) / e.total);
         },
       });
-      if (isPublic) setImages([...images, res.data]);
-      else setMyImages([...myImages, res.data]);
+      if (isPublic) setImages([...images, ...res.data]);
+      else setMyImages([...myImages, ...res.data]);
       toast.success("이미지 업로드 성공!");
       setTimeout(() => {
         setPrecent(0);
-        setFileName(defaultFileName);
-        setImgSrc(null);
+        setPreviews([]);
       }, 2000);
     } catch (err) {
       toast.error(err.response.data.message);
       setPrecent(0);
-      setFileName(defaultFileName);
-      setImgSrc(null);
+      setPreviews([]);
       console.log(err);
     }
   };
+
+  const fileName =
+    previews.length === 0
+      ? "이미지 파일을 업로드 해주세요."
+      : previews.reduce(
+          (previous, current) => previous + `${current.fileName},`,
+          ""
+        );
+  const previewImages = previews.map((preview, index) => (
+    <ImgPreview key={index} src={preview.imgSrc} alt="" show={preview.imgSrc} />
+  ));
   return (
     <form onSubmit={onSubmit}>
-      <ImgPreview alt="" show={imgSrc} src={imgSrc} />
+      <ImgPreviewDiv>{previewImages}</ImgPreviewDiv>
       <ProgressBar precent={precent} />
       <FileDropper>
         {fileName}
         <input
           id="image"
           type="file"
+          multiple
           accept="image/jpeg,image/png,image/gif  "
           onChange={imageSelectHandler}
         />
@@ -83,11 +104,12 @@ const FileDropper = styled.div`
   height: 200px;
   background-color: #eeb977;
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   display: flex;
   position: relative;
   justify-content: center;
   align-items: center;
+  word-break: break-all;
 
   input {
     width: 100%;
@@ -103,7 +125,10 @@ const FileDropper = styled.div`
     transition: 0.5;
   }
 `;
-
+const ImgPreviewDiv = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
 const ImgPreview = styled.img`
   width: 0%;
   opacity: 0;
@@ -125,6 +150,7 @@ const Button = styled.button`
   width: 100%;
   height: 40px;
   border-radius: 3px;
+  margin-top: 10px;
   cursor: pointer;
 `;
 

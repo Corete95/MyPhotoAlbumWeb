@@ -68,8 +68,13 @@ const RegisterPage = () => {
 
 const RegisterContainer = styled.div`
   max-width: 350px;
-  padding-top: 100px;
   margin: 0 auto;
+
+  h3 {
+    font-size: 20px;
+    text-align: center;
+    margin: 30px;
+  }
 `;
 
 const Button = styled.button`

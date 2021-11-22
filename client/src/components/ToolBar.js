@@ -20,7 +20,7 @@ const ToolBar = () => {
   };
 
   return (
-    <div>
+    <NavContainer>
       <Link to="/">
         <span className="home">홈</span>
       </Link>
@@ -38,19 +38,25 @@ const ToolBar = () => {
           </Link>
         </>
       )}
-    </div>
+    </NavContainer>
   );
 };
-
+const NavContainer = styled.div`
+  width: 100%;
+  background-color: #eeb977;
+  padding: 10px 10px;
+  a {
+    text-decoration-line: none;
+  }
+`;
 const Span = styled.span`
   float: right;
   cursor: pointer;
-
   ${(props) =>
     props.register &&
     css`
       margin-right: 15px;
-    `}
+    `};
 `;
 
 export default ToolBar;
