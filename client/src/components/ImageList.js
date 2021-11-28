@@ -5,7 +5,15 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const ImageList = () => {
-  const { images, myImages, isPublic, setIsPublic } = useContext(ImageContext);
+  const {
+    images,
+    myImages,
+    isPublic,
+    setIsPublic,
+    loaderMoreImages,
+    imageLoading,
+    imageError,
+  } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
 
   const imgList = (isPublic ? images : myImages).map((image) => (
@@ -23,6 +31,12 @@ const ImageList = () => {
         </button>
       )}
       <ImageFiles className="image-files">{imgList}</ImageFiles>
+      {imageError && <div>Error...</div>}
+      {imageLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <Button onClick={loaderMoreImages}>이미지 더보기</Button>
+      )}
     </ImageListContainer>
   );
 };
@@ -54,4 +68,5 @@ const ImageFiles = styled.div`
     }
   }
 `;
+const Button = styled.button``;
 export default ImageList;
