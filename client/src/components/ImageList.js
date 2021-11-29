@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ImageContext } from "../context/ImageContext";
 import styled from "styled-components";
@@ -15,12 +15,37 @@ const ImageList = () => {
     imageError,
   } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
+  const elementRef = useRef(null);
 
-  const imgList = (isPublic ? images : myImages).map((image) => (
-    <Link key={image.key} to={`/images/${image._id}`}>
-      <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
-    </Link>
-  ));
+  useEffect(() => {
+    if (!elementRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      console.log("intersection", entry.isIntersecting);
+      if (entry.isIntersecting) loaderMoreImages();
+    });
+    observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, [loaderMoreImages]);
+
+  const imgList = isPublic
+    ? images.map((image, index) => (
+        <Link
+          key={image.key}
+          to={`/images/${image._id}`}
+          ref={index + 1 === images.length ? elementRef : undefined}
+        >
+          <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
+        </Link>
+      ))
+    : myImages.map((image, index) => (
+        <Link
+          key={image.key}
+          to={`/images/${image._id}`}
+          ref={index + 1 === myImages.length ? elementRef : undefined}
+        >
+          <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
+        </Link>
+      ));
 
   return (
     <ImageListContainer>
@@ -32,11 +57,7 @@ const ImageList = () => {
       )}
       <ImageFiles className="image-files">{imgList}</ImageFiles>
       {imageError && <div>Error...</div>}
-      {imageLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <Button onClick={loaderMoreImages}>이미지 더보기</Button>
-      )}
+      {imageLoading && <div>Loading...</div>}
     </ImageListContainer>
   );
 };
