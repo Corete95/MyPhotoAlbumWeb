@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useCallback, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ImageContext } from "../context/ImageContext";
 import styled from "styled-components";
@@ -10,12 +10,18 @@ const ImageList = () => {
     myImages,
     isPublic,
     setIsPublic,
-    loaderMoreImages,
     imageLoading,
     imageError,
+    setImageUrl,
   } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
   const elementRef = useRef(null);
+
+  const loaderMoreImages = useCallback(() => {
+    if (images.length === 0 || imageLoading) return;
+    const lastImageId = images[images.length - 1]._id;
+    setImageUrl(`${isPublic ? "" : "/users/me"}/images?lastid=${lastImageId}`);
+  }, [images, imageLoading, isPublic, setImageUrl]);
 
   useEffect(() => {
     if (!elementRef.current) return;
@@ -27,25 +33,15 @@ const ImageList = () => {
     return () => observer.disconnect();
   }, [loaderMoreImages]);
 
-  const imgList = isPublic
-    ? images.map((image, index) => (
-        <Link
-          key={image.key}
-          to={`/images/${image._id}`}
-          ref={index + 1 === images.length ? elementRef : undefined}
-        >
-          <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
-        </Link>
-      ))
-    : myImages.map((image, index) => (
-        <Link
-          key={image.key}
-          to={`/images/${image._id}`}
-          ref={index + 1 === myImages.length ? elementRef : undefined}
-        >
-          <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
-        </Link>
-      ));
+  const imgList = images.map((image, index) => (
+    <Link
+      key={image.key}
+      to={`/images/${image._id}`}
+      ref={index + 1 === images.length ? elementRef : undefined}
+    >
+      <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
+    </Link>
+  ));
 
   return (
     <ImageListContainer>
