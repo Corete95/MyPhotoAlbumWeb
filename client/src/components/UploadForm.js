@@ -6,7 +6,7 @@ import { ImageContext } from "../context/ImageContext";
 import styled, { css } from "styled-components";
 
 const UploadForm = () => {
-  const { images, setImages } = useContext(ImageContext);
+  const { setImages, setMyImages } = useContext(ImageContext);
   const [files, setFiles] = useState(null);
   const [previews, setPreviews] = useState([]);
   const [precent, setPrecent] = useState(0);
@@ -48,7 +48,8 @@ const UploadForm = () => {
           setPrecent(Math.round(100 * e.loaded) / e.total);
         },
       });
-      setImages((prevData) => [...prevData, ...res.data]);
+      if (isPublic) setImages((prevData) => [...res.data, ...prevData]);
+      setMyImages((prevData) => [...res.data, ...prevData]);
       toast.success("이미지 업로드 성공!");
       setTimeout(() => {
         setPrecent(0);
